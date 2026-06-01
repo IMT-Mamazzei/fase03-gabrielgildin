@@ -1,18 +1,17 @@
 package br.maua.cic303;
 
-import java_cup.runtime.Symbol; // Importação necessária para o CUP
+import java_cup.runtime.Symbol;
 
 %%
 
 %class Lexer
 %public
 %unicode
-%cup       // <-- CRÍTICO: Esta diretiva ativa a integração com o CUP
+%cup
 %line
 %column
 
 %{
-    // Funções auxiliares para gerar objetos Symbol para o CUP
     private Symbol symbol(int type) {
         return new Symbol(type, yyline, yycolumn);
     }
@@ -22,30 +21,23 @@ import java_cup.runtime.Symbol; // Importação necessária para o CUP
     }
 %}
 
-/* ========================================================================= */
-/* MACROS (Expressões Regulares Auxiliares)                                  */
-/* ========================================================================= */
+/* Macros */
 LineTerminator = \r|\n|\r\n
 WhiteSpace     = {LineTerminator} | [ \t\f]
 
-/* TODO 1: Crie a macro para Número (Notação de Engenharia) */
 Number = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
 
-/* TODO 2: Crie a macro para Identificador (Máximo de 32 caracteres) */
 Letter = [a-zA-Z]
 Digit  = [0-9]
 Identifier = {Letter}({Letter}|{Digit}|_){0,31}
 OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
 
 %%
-/* ========================================================================= */
-/* REGRAS LÉXICAS                                                            */
-/* ========================================================================= */
 
 <YYINITIAL> {
-    
-    /* Regra para ignorar espaços em branco */
-    {WhiteSpace}    { /* Não faz nada */ }
+   
+    /* Espaços em branco */
+    {WhiteSpace}    { /* Ignora */ }
 
     /* Palavras Reservadas */
     "if"            { return symbol(sym.IF); }
@@ -54,13 +46,13 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     "while"         { return symbol(sym.WHILE); }
 
     /* Pontuação */
-    "("              { return symbol(sym.LPAREN); }
-    ")"              { return symbol(sym.RPAREN); }
-    "{"              { return symbol(sym.LBRACE); }
-    "}"              { return symbol(sym.RBRACE); }
-    ";"              { return symbol(sym.SEMI); }
+    "("             { return symbol(sym.LPAREN); }
+    ")"             { return symbol(sym.RPAREN); }
+    "{"             { return symbol(sym.LBRACE); }
+    "}"             { return symbol(sym.RBRACE); }
+    ";"             { return symbol(sym.SEMI); }
 
-    /* Operadores de Atribuição e Relacionais */
+    /* Operadores Relacionais e Atribuição */
     "=="            { return symbol(sym.REL_OP, yytext()); }
     "!="            { return symbol(sym.REL_OP, yytext()); }
     "<="            { return symbol(sym.REL_OP, yytext()); }
@@ -76,16 +68,13 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     "/"             { return symbol(sym.MUL_OP, yytext()); }
     "%"             { return symbol(sym.MUL_OP, yytext()); }
 
-    /* Regras para as Macros */
+    /* Expressões Regulares (Macros) */
     {Identifier}    { return symbol(sym.ID, yytext()); }
     {Number}        { return symbol(sym.NUMBER, yytext()); }
 
-    /* Identificadores grandes demais */
+    /* Erros */
     {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
-
-    /* Fallback: Qualquer outro caractere não reconhecido gera um Erro */
-    .               { throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }
+    .                     { throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }
 }
 
-/* Regra para o Final do Arquivo */
 <<EOF>>             { return symbol(sym.EOF, ""); }
