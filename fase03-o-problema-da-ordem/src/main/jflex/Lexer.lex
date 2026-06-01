@@ -30,7 +30,7 @@ Number = [0-9]+(\.[0-9]+)?([Ee][+-]?[0-9]+)?
 Letter = [a-zA-Z]
 Digit  = [0-9]
 Identifier = {Letter}({Letter}|{Digit}|_){0,31}
-OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
+OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32}({Letter}|{Digit}|_)*
 
 %%
 
