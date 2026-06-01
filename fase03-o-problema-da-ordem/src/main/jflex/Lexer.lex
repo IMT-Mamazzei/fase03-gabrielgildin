@@ -39,30 +39,29 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
 
 %%
 /* ========================================================================= */
-/* REGRAS LÉXICAS (Altere para retornar sym.XXX)                             */
+/* REGRAS LÉXICAS                                                            */
 /* ========================================================================= */
 
 <YYINITIAL> {
-   
+    
     /* Regra para ignorar espaços em branco */
     {WhiteSpace}    { /* Não faz nada */ }
 
-    /* TODO 3: Palavras Reservadas (if, then, else, while) */
+    /* Palavras Reservadas */
     "if"            { return symbol(sym.IF); }
     "then"          { return symbol(sym.THEN); }
     "else"          { return symbol(sym.ELSE); }
     "while"         { return symbol(sym.WHILE); }
 
-    /* TODO 4: Pontuação ( ) { } ; */
-    \(              { return symbol(sym.LPAREN); }
-    \)              { return symbol(sym.RPAREN); }
-    \{              { return symbol(sym.LBRACE); }
-    \}              { return symbol(sym.RBRACE); }
-    ";"             { return symbol(sym.SEMI); }
+    /* Pontuação */
+    "("              { return symbol(sym.LPAREN); }
+    ")"              { return symbol(sym.RPAREN); }
+    "{"              { return symbol(sym.LBRACE); }
+    "}"              { return symbol(sym.RBRACE); }
+    ";"              { return symbol(sym.SEMI); }
 
-    /* TODO 5: Operadores de Atribuição e Relacionais (=, ==, !=, <, >, <=, >=) */
-    /* Operadores compostos primeiro para evitar erros de casamento parcial! */
-    "=="           { return symbol(sym.REL_OP, yytext()); }
+    /* Operadores de Atribuição e Relacionais */
+    "=="            { return symbol(sym.REL_OP, yytext()); }
     "!="            { return symbol(sym.REL_OP, yytext()); }
     "<="            { return symbol(sym.REL_OP, yytext()); }
     ">="            { return symbol(sym.REL_OP, yytext()); }
@@ -70,19 +69,22 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
     "<"             { return symbol(sym.REL_OP, yytext()); }
     ">"             { return symbol(sym.REL_OP, yytext()); }
 
-    /* TODO 6: Operadores Matemáticos (+, -, *, /, %) */
-    "+" | "-"       { return symbol(sym.ADD_OP, yytext()); }
-    "*" | "/" | "%" { return symbol(sym.MUL_OP, yytext()); }
+    /* Operadores Matemáticos */
+    "+"             { return symbol(sym.ADD_OP, yytext()); }
+    "-"             { return symbol(sym.ADD_OP, yytext()); }
+    "*"             { return symbol(sym.MUL_OP, yytext()); }
+    "/"             { return symbol(sym.MUL_OP, yytext()); }
+    "%"             { return symbol(sym.MUL_OP, yytext()); }
 
     /* Regras para as Macros */
     {Identifier}    { return symbol(sym.ID, yytext()); }
     {Number}        { return symbol(sym.NUMBER, yytext()); }
 
-    /* Identificadores grandes demais (Captura o erro) */
+    /* Identificadores grandes demais */
     {OversizedIdentifier} { throw new RuntimeException("Erro Léxico: Identificador gigante -> " + yytext()); }
 
     /* Fallback: Qualquer outro caractere não reconhecido gera um Erro */
-    .   { throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }
+    .               { throw new RuntimeException("Erro Léxico: Caractere Ilegal -> " + yytext()); }
 }
 
 /* Regra para o Final do Arquivo */
