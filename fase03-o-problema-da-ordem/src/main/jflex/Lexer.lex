@@ -62,7 +62,7 @@ OversizedIdentifier = {Letter}({Letter}|{Digit}|_){32,}
 
     /* TODO 5: Operadores de Atribuição e Relacionais (=, ==, !=, <, >, <=, >=) */
     /* Operadores compostos primeiro para evitar erros de casamento parcial! */
-    "== "           { return symbol(sym.REL_OP, yytext()); }
+    "=="           { return symbol(sym.REL_OP, yytext()); }
     "!="            { return symbol(sym.REL_OP, yytext()); }
     "<="            { return symbol(sym.REL_OP, yytext()); }
     ">="            { return symbol(sym.REL_OP, yytext()); }
